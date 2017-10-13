@@ -1,0 +1,43 @@
+Vagrant.configure('2') do |config|
+  config.vm.box = 'azure'
+  #config.vm.provision "file", source: "Dockerfile", destination: "/home/vagrant/jenkins-docker/Dockerfile"
+  #config.vm.provision "file", source: "docker-1.13.1.tgz", destination: "/home/vagrant/jenkins-docker/docker-1.13.1.tgz"
+
+  #config.vm.provision "shell", path: "dockerinit.sh"
+  config.vm.provision "shell", path: "sedisable.sh"
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "nginx.yml"
+  end
+  
+  
+  #config.vm.provision "shell", inline: <<-SHELL
+  #  mkdir /home/vagrant/jenkins-docker/
+  #  sudo chmod -R 777 /etc/docker/
+  #SHELL
+
+
+
+  
+  # use local ssh key to connect to remote vagrant box
+  config.ssh.private_key_path = '~/.ssh/id_rsa'
+  config.vm.provider :azure do |azure, override|
+
+    # each of the below values will default to use the env vars named as below if not specified explicitly
+    azure.tenant_id = 'c270fb2b-56c1-4feb-b910-9d22f9ba8780'
+    azure.client_id = 'b7ff3117-53fa-437e-ae2e-5a1d86115829'
+    azure.client_secret = '6cc00e9c-11df-4eb6-9338-45afdd55990d'
+    azure.subscription_id = 'bc74c1bd-c02d-445c-bd97-8e9c161fb58b'
+    
+    azure.vm_image_urn = 'OpenLogic:CentOS:7.3:latest'
+
+    azure.vm_name = 'ansibleclient'
+    
+    azure.virtual_network_name = 'vagrantVNET'
+
+    azure.resource_group_name = 'little-haze-19'
+  end
+
+  
+
+end
